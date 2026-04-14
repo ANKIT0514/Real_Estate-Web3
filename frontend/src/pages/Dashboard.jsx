@@ -84,25 +84,25 @@ export default function Dashboard() {
       <div className="orb orb-1" />
 
       {/* Header */}
-      <section style={{ padding: '48px 0 32px', position: 'relative', zIndex: 1, borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '48px 0 32px', position: 'relative', zIndex: 1, borderBottom: '1px solid rgba(16,42,67,0.08)' }}>
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
             <div>
               <div className="tag" style={{ marginBottom: 12 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} /> Connected
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#124634', display: 'inline-block' }} /> Connected
               </div>
               <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}>My Dashboard</h1>
               <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 6, fontFamily: 'var(--font-mono)' }}>{account}</p>
             </div>
-            <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               {[
                 { label: 'Balance',    val: `${parseFloat(balance||0).toFixed(4)} ETH` },
                 { label: 'Properties', val: properties.length },
                 { label: 'Leases',     val: leases.length },
               ].map((s,i) => (
-                <div key={i} className="glass-card" style={{ padding: '16px 24px', textAlign: 'center', minWidth: 110 }}>
-                  <div style={{ fontSize: 22, fontFamily: 'var(--font-display)', color: 'var(--gold)', fontWeight: 300 }}>{s.val}</div>
-                  <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
+                <div key={i} className="glass-card" style={{ padding: '20px 26px', textAlign: 'center', minWidth: 130, background: '#ffffff' }}>
+                  <div style={{ fontSize: 24, fontFamily: 'var(--font-display)', color: 'var(--gold)', fontWeight: 600 }}>{s.val}</div>
+                  <div style={{ fontSize: 12, color: '#7d8a97', marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -111,7 +111,7 @@ export default function Dashboard() {
       </section>
 
       {/* Tabs */}
-      <div style={{ borderBottom: '1px solid var(--border)', position: 'sticky', top: 72, zIndex: 50, background: 'rgba(13,13,15,0.95)', backdropFilter: 'blur(20px)' }}>
+      <div style={{ borderBottom: '1px solid rgba(16,42,67,0.08)', position: 'sticky', top: 78, zIndex: 50, background: 'rgba(255,255,255,0.96)', backdropFilter: 'blur(20px)' }}>
         <div className="container" style={{ display: 'flex' }}>
           {TABS.map((t, i) => (
             <button key={i} onClick={() => setTab(i)} style={{
@@ -144,7 +144,7 @@ export default function Dashboard() {
                     <div style={{ padding: 20 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                         <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400 }}>{p.name || `Property #${p.tokenId}`}</h3>
-                        <div style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, background: p.isListed ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)', color: p.isListed ? 'var(--green)' : 'var(--dim)' }}>
+                        <div style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, background: p.isListed ? 'rgba(176,141,87,0.14)' : 'rgba(244,239,230,0.8)', color: p.isListed ? '#102a43' : '#7d8a97' }}>
                           {p.isListed ? 'Listed' : 'Unlisted'}
                         </div>
                       </div>
@@ -178,7 +178,7 @@ export default function Dashboard() {
                         <div style={{ fontSize: 22, fontFamily: 'var(--font-display)', color: 'var(--gold)' }}>{l.rentAmount} ETH<span style={{ fontSize: 13, color: 'var(--muted)' }}>/month</span></div>
                       </div>
                       <div style={{ display: 'flex', gap: 24 }}>
-                        <div><div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 2 }}>Status</div><div style={{ fontSize: 13, color: l.status === 'ACTIVE' ? 'var(--green)' : 'var(--red)' }}>{l.status}</div></div>
+                        <div><div style={{ fontSize: 11, color: '#7d8a97', marginBottom: 2 }}>Status</div><div style={{ fontSize: 13, color: l.status === 'ACTIVE' ? '#124634' : '#b63636' }}>{l.status}</div></div>
                         <div><div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 2 }}>Ends</div><div style={{ fontSize: 13 }}>{new Date(l.endDate).toLocaleDateString()}</div></div>
                       </div>
                     </div>
@@ -262,7 +262,7 @@ export default function Dashboard() {
                   </button>
 
                   {mintError && <div style={{ padding: '12px 16px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 8, fontSize: 13, color: 'var(--red)' }}>{mintError}</div>}
-                  {mintHash  && <div style={{ padding: '12px 16px', background: 'rgba(74,222,128,0.08)',  border: '1px solid rgba(74,222,128,0.2)',  borderRadius: 8, fontSize: 13, color: 'var(--green)' }}>✓ Property minted! <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, marginTop: 4 }}>{mintHash}</div></div>}
+                  {mintHash  && <div style={{ padding: '12px 16px', background: 'rgba(176,141,87,0.08)',  border: '1px solid rgba(176,141,87,0.15)',  borderRadius: 14, fontSize: 13, color: '#124634' }}>✓ Property minted! <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, marginTop: 4 }}>{mintHash}</div></div>}
                 </div>
               </motion.div>
             </div>

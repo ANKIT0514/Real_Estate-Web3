@@ -31,21 +31,60 @@ const _fetchMeta = async (uri) => {
   }
 }
 
-const _format = (tokenId, prop, meta) => ({
-  tokenId:      tokenId.toString(),
-  owner:        prop.owner,
-  metadataURI:  prop.metadataURI,
-  price:        formatEth(prop.price),
-  rentPerMonth: formatEth(prop.rentPerMonth),
-  isListed:     prop.isListed,
-  isForRent:    prop.isForRent,
-  isVerified:   prop.isVerified,
-  propertyType: TYPES[Number(prop.propType)],
-  name:         meta?.name        || "",
-  description:  meta?.description || "",
-  image:        meta?.image       || "",
-  attributes:   meta?.attributes  || [],
-});
+const _format = (tokenId, prop, meta) => {
+  const attributes = Array.isArray(meta?.attributes) ? meta.attributes : []
+  const attr = (trait) => attributes.find(a => a.trait_type?.toLowerCase() === trait.toLowerCase())?.value
+
+  const title = meta?.title || meta?.name || `Property #${tokenId}`
+  const description = meta?.description || ''
+  const image = meta?.image || ''
+  const city = meta?.city || attr('City') || attr('city') || ''
+  const state = meta?.state || attr('State') || attr('state') || attr('Country') || ''
+  const latitude = Number(meta?.latitude || meta?.lat || attr('Latitude') || attr('latitude') || '') || undefined
+  const longitude = Number(meta?.longitude || meta?.lng || meta?.lon || attr('Longitude') || attr('longitude') || '') || undefined
+
+  const priceInETH = formatEth(prop.price)
+  const rawInr = meta?.priceInINR || meta?.price_in_inr || meta?.priceINR || meta?.priceINR
+  const priceInINR = rawInr || (priceInETH ? `₹${Math.round(Number(priceInETH) * 165000).toLocaleString('en-IN')}` : '')
+
+  const areaSqFt = attr('Area (sqft)') || attr('Area') || ''
+  const ownerAddress = prop.owner
+  const legalStatus = meta?.legalStatus || attr('Legal Status') || attr('Status') || (prop.isVerified ? 'Verified' : 'Pending Verification')
+  const verificationStatus = meta?.verificationStatus || attr('Verification Status') || (prop.isVerified ? 'Verified' : 'Pending Verification')
+  const documents = meta?.documents || meta?.files || []
+  const createdAt = meta?.createdAt || meta?.created_at || meta?.created || (prop.listedAt ? new Date(Number(prop.listedAt) * 1000).toISOString() : new Date().toISOString())
+
+  return {
+    id:            tokenId.toString(),
+    tokenId:       tokenId.toString(),
+    title,
+    name:          meta?.name || '',
+    description,
+    image,
+    metadataURI:   prop.metadataURI,
+    city,
+    state,
+    latitude,
+    longitude,
+    priceInETH,
+    priceInINR,
+    price:         priceInETH,
+    rentPerMonth:  formatEth(prop.rentPerMonth),
+    areaSqFt,
+    ownerAddress,
+    owner:         prop.owner,
+    isListed:      prop.isListed,
+    isForSale:     prop.isListed,
+    isForRent:     prop.isForRent,
+    isVerified:    prop.isVerified,
+    legalStatus,
+    verificationStatus,
+    documents,
+    createdAt,
+    propertyType:  TYPES[Number(prop.propType)],
+    attributes,
+  }
+}
 
 const getAllProperties = async (req, res) => {
   try {
@@ -74,7 +113,7 @@ const getProperty = async (req, res) => {
     const prop     = await contract.getProperty(req.params.tokenId);
     const owner    = await contract.ownerOf(req.params.tokenId);
     const meta     = await _fetchMeta(prop.metadataURI);
-    res.json({ success: true, property: { ..._format(req.params.tokenId, prop, meta), currentOwner: owner } });
+    res.json({ success: true, property: { ..._format(req.params.tokenId, prop, meta), currentOwner: owner, ownerAddress: owner } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
 

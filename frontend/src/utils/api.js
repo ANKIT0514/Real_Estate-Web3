@@ -13,5 +13,11 @@ export const getWalletNFTs     = (addr)   => api.get(`/wallet/nfts/${addr}`).the
 export const getTenantLeases   = (wallet) => api.get(`/rent/tenant/${wallet}`).then(r => r.data)
 export const getLandlordLeases = (wallet) => api.get(`/rent/landlord/${wallet}`).then(r => r.data)
 export const getBuyerEscrows   = (wallet) => api.get(`/escrow/buyer/${wallet}`).then(r => r.data)
+export const uploadDocument   = (file, documentType) => {
+  const data = new FormData()
+  data.append('document', file)
+  data.append('documentType', documentType)
+  return api.post('/documents', data).then(r => r.data)
+}
 
 export default api

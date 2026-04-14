@@ -20,11 +20,22 @@ export default function Navbar() {
   useEffect(() => { setMenuOpen(false) }, [location])
 
   const links = [
-    { to: '/',            label: 'Home' },
-    { to: '/properties',  label: 'Properties' },
-    { to: '/marketplace', label: 'Marketplace' },
-    { to: '/dashboard',   label: 'Dashboard' },
+    { to: '/',                      label: 'Home' },
+    { to: '/properties',            label: 'Properties' },
+    { to: '/india-map',             label: 'India Map' },
+    { to: '/dashboard?view=analytics', label: 'Analytics' },
+    { to: '/marketplace',           label: 'Verifier' },
+    { to: '/dashboard?view=profile', label: 'Profile' },
   ]
+
+  const getActive = (link) => {
+    if (link.label === 'Home') return location.pathname === '/'
+    if (link.label === 'Properties') return location.pathname === '/properties'
+    if (link.label === 'India Map') return location.pathname === '/india-map'
+    if (link.label === 'Analytics') return location.pathname === '/dashboard' && !location.search.includes('view=profile')
+    if (link.label === 'Profile') return location.pathname === '/dashboard' && location.search.includes('view=profile')
+    return location.pathname === link.to
+  }
 
   return (
     <>
@@ -33,56 +44,60 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-          padding: '0 32px', height: 72,
+          position: 'fixed', top: 18, left: 18, right: 18, zIndex: 100,
+          padding: '0 28px', minHeight: 76,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: scrolled ? 'rgba(13,13,15,0.92)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          background: scrolled ? 'rgba(10,14,22,0.92)' : 'rgba(10,14,22,0.74)',
+          backdropFilter: 'blur(18px)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 24,
+          boxShadow: scrolled ? '0 26px 60px rgba(0,0,0,0.18)' : '0 18px 45px rgba(0,0,0,0.14)',
           transition: 'all 0.4s ease',
         }}
       >
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{
-            width: 36, height: 36,
-            background: 'linear-gradient(135deg, var(--gold), var(--gold-d))',
-            borderRadius: 8,
+            width: 44, height: 44,
+            background: 'rgba(255,255,255,0.12)',
+            border: '1px solid rgba(255,255,255,0.16)',
+            borderRadius: 14,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Building2 size={18} color="#080808" strokeWidth={2} />
+            <Building2 size={18} color="#f7ede0" strokeWidth={2} />
           </div>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, letterSpacing: '-0.02em' }}>
-            Estate<span style={{ color: 'var(--gold)' }}>Chain</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#f4efe6', letterSpacing: '-0.02em' }}>
+            EstateChain <span style={{ color: 'var(--gold)' }}>India</span>
           </span>
         </Link>
 
         {/* Desktop Links */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {links.map(l => (
-            <Link key={l.to} to={l.to} style={{
-              padding: '8px 16px', borderRadius: 6,
-              fontSize: 13, fontWeight: 400,
-              color: location.pathname === l.to ? 'var(--gold)' : 'var(--muted)',
-              background: location.pathname === l.to ? 'rgba(201,168,76,0.08)' : 'transparent',
-              transition: 'all 0.2s', letterSpacing: '0.02em',
-            }}>
-              {l.label}
-            </Link>
-          ))}
+        <div className="navbar-links">
+          {links.map((link) => {
+            const active = getActive(link)
+            return (
+              <Link key={`${link.label}-${link.to}`} to={link.to} className={active ? 'nav-link active' : 'nav-link'}>
+                {link.label}
+              </Link>
+            )
+          })}
         </div>
+
+        <button className="nav-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
 
         {/* Wallet */}
         <div style={{ position: 'relative' }}>
           {account ? (
             <button onClick={() => setWalletMenu(!walletMenu)} style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              padding: '8px 16px',
-              background: 'rgba(201,168,76,0.1)',
-              border: '1px solid rgba(201,168,76,0.25)',
-              borderRadius: 8, color: 'var(--gold)', fontSize: 13,
+              padding: '10px 18px',
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 999, color: '#fff', fontSize: 13, fontWeight: 600,
             }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 8px var(--green)' }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--forest)', boxShadow: '0 0 8px rgba(18,70,52,0.25)' }} />
               {shortAddress}
               <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: walletMenu ? 'rotate(180deg)' : 'none' }} />
             </button>
@@ -102,22 +117,22 @@ export default function Navbar() {
                 transition={{ duration: 0.15 }}
                 style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: 8,
-                  background: 'var(--card)', border: '1px solid var(--border-h)',
-                  borderRadius: 12, padding: 12, minWidth: 220,
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                  background: 'var(--white)', border: '1px solid rgba(16,42,67,0.08)',
+                  borderRadius: 18, padding: 16, minWidth: 240,
+                  boxShadow: '0 24px 55px rgba(16,42,67,0.12)',
                 }}
               >
-                <div style={{ padding: '8px 12px', marginBottom: 8, borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 11, color: 'var(--dim)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Balance</div>
+                <div style={{ padding: '10px 12px', marginBottom: 12, borderBottom: '1px solid rgba(16,42,67,0.08)' }}>
+                  <div style={{ fontSize: 11, color: '#7d8a97', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Balance</div>
                   <div style={{ fontSize: 18, fontFamily: 'var(--font-display)', color: 'var(--gold)' }}>
-                    {parseFloat(balance).toFixed(4)} <span style={{ fontSize: 13, color: 'var(--muted)' }}>ETH</span>
+                    {parseFloat(balance).toFixed(4)} <span style={{ fontSize: 13, color: '#5e6d77' }}>ETH</span>
                   </div>
                 </div>
                 <Link to="/dashboard" onClick={() => setWalletMenu(false)}
-                  style={{ display: 'block', padding: '8px 12px', borderRadius: 6, fontSize: 13, color: 'var(--muted)' }}
+                  style={{ display: 'block', padding: '10px 12px', borderRadius: 12, fontSize: 13, color: '#5e6d77', marginBottom: 8, background: 'rgba(16,42,67,0.03)' }}
                 >My Dashboard</Link>
                 <button onClick={() => { disconnect(); setWalletMenu(false) }}
-                  style={{ width: '100%', textAlign: 'left', padding: '8px 12px', borderRadius: 6, fontSize: 13, color: 'var(--red)', background: 'transparent', border: 'none' }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 12, fontSize: 13, color: '#b63636', background: 'transparent', border: '1px solid rgba(182,54,54,0.12)' }}
                 >Disconnect</button>
               </motion.div>
             )}
@@ -129,23 +144,20 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{
-              position: 'fixed', top: 72, left: 0, right: 0, zIndex: 99,
-              background: 'var(--deep)', borderBottom: '1px solid var(--border)',
-              padding: '16px 24px',
-            }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="navbar-mobile-menu"
           >
-            {links.map(l => (
-              <Link key={l.to} to={l.to} style={{
-                display: 'block', padding: '14px 0',
-                borderBottom: '1px solid var(--border)',
-                color: location.pathname === l.to ? 'var(--gold)' : 'var(--muted)',
-                fontSize: 15,
-              }}>{l.label}</Link>
-            ))}
+            {links.map((link) => {
+              const active = getActive(link)
+              return (
+                <Link key={`${link.label}-mobile`} to={link.to} className={active ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+                  {link.label}
+                </Link>
+              )
+            })}
           </motion.div>
         )}
       </AnimatePresence>

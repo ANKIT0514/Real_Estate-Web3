@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, TrendingUp, MapPin, Home } from 'lucide-react'
 import { getListings } from '../utils/api.js'
+import DocumentUpload from '../components/DocumentUpload.jsx'
 
 export default function Marketplace() {
   const [listings, setListings] = useState([])
@@ -69,7 +70,7 @@ export default function Marketplace() {
                 >
                   <Link to={`/properties/${l.tokenId}`}>
                     {/* Image */}
-                    <div style={{ position: 'relative', height: 200, overflow: 'hidden', background: 'var(--surface)' }}>
+                    <div style={{ position: 'relative', height: 200, overflow: 'hidden', background: '#f4efe6' }}>
                       {l.image ? (
                         <img src={l.image} alt={l.name}
                           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s ease' }}
@@ -84,13 +85,13 @@ export default function Marketplace() {
                       <div style={{
                         position: 'absolute', top: 12, left: 12,
                         display: 'flex', alignItems: 'center', gap: 6,
-                        background: 'rgba(74,222,128,0.15)',
-                        border: '1px solid rgba(74,222,128,0.3)',
+                        background: 'rgba(176,141,87,0.14)',
+                        border: '1px solid rgba(176,141,87,0.2)',
                         borderRadius: 100, padding: '4px 10px',
-                        fontSize: 10, color: 'var(--green)',
-                        fontWeight: 500, letterSpacing: '0.06em',
+                        fontSize: 10, color: '#5e6d77',
+                        fontWeight: 700, letterSpacing: '0.08em',
                       }}>
-                        <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 6px var(--green)' }} />
+                        <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#124634', boxShadow: '0 0 6px rgba(18,70,52,0.22)' }} />
                         LIVE
                       </div>
 
@@ -108,10 +109,10 @@ export default function Marketplace() {
                       {/* Price overlay */}
                       <div style={{
                         position: 'absolute', bottom: 0, left: 0, right: 0,
-                        background: 'linear-gradient(0deg, rgba(8,8,8,0.95) 0%, transparent 100%)',
+                        background: 'linear-gradient(0deg, rgba(16,42,67,0.88) 0%, transparent 100%)',
                         padding: '28px 16px 12px',
                       }}>
-                        <div style={{ fontSize: 26, fontFamily: 'var(--font-display)', color: 'var(--gold)', fontWeight: 300 }}>
+                        <div style={{ fontSize: 26, fontFamily: 'var(--font-display)', color: '#ffffff', fontWeight: 600 }}>
                           {l.price} <span style={{ fontSize: 14, color: 'var(--muted)' }}>ETH</span>
                         </div>
                       </div>
@@ -134,9 +135,9 @@ export default function Marketplace() {
                         </div>
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 4,
-                          fontSize: 12, color: 'var(--gold)',
-                          background: 'rgba(201,168,76,0.08)',
-                          padding: '4px 10px', borderRadius: 4,
+                          fontSize: 12, color: '#102a43',
+                          background: 'rgba(176,141,87,0.14)',
+                          padding: '4px 10px', borderRadius: 999,
                         }}>
                           Buy Now <ArrowRight size={11} />
                         </div>
@@ -147,6 +148,20 @@ export default function Marketplace() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="section" style={{ background: 'rgba(244,239,230,0.7)', position: 'relative', zIndex: 1 }}>
+        <div className="container">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="tag" style={{ marginBottom: 16 }}>Legal Document Verification</div>
+            <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', marginBottom: 14 }}>Upload India-specific legal documents</h2>
+            <p style={{ color: 'var(--muted)', maxWidth: 680, lineHeight: 1.8, marginBottom: 30 }}>
+              Demonstrate document validation for e-Katha, A-Katha, B-Katha, title deeds, and other India legal paperwork in a premium verifier workflow.
+            </p>
+          </motion.div>
+
+          <DocumentUpload />
         </div>
       </section>
     </div>

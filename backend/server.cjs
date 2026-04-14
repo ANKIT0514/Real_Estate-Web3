@@ -2,6 +2,7 @@ const express = require("express");
 const cors    = require("cors");
 const helmet  = require("helmet");
 const morgan  = require("morgan");
+const path    = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -10,12 +11,14 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(helmet());
 app.use(morgan("dev"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/properties",  require("./routes/property.routes.cjs"));
 app.use("/api/marketplace", require("./routes/marketplace.routes.cjs"));
 app.use("/api/escrow",      require("./routes/escrow.routes.cjs"));
 app.use("/api/rent",        require("./routes/rent.routes.cjs"));
 app.use("/api/wallet",      require("./routes/wallet.routes.cjs"));
+app.use("/api/documents",   require("./routes/document.routes.cjs"));
 
 app.get("/", (req, res) =>
   res.json({ message: "🏠 Real Estate Blockchain API is running!" })

@@ -33,7 +33,8 @@ export default function PropertyDetail() {
     setTxLoading(true); setError(null)
     try {
       const market = getMarketplaceContract(signer)
-      const tx = await market.buyProperty(id, { value: ethers.parseEther(property.price) })
+      const ethValue = property.priceInETH || property.price
+      const tx = await market.buyProperty(id, { value: ethers.parseEther(ethValue) })
       await tx.wait()
       setTxHash(tx.hash)
     } catch (e) { setError(e.reason || e.message) }
@@ -76,31 +77,31 @@ export default function PropertyDetail() {
 
           {/* Left */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 32, background: 'var(--surface)', aspectRatio: '16/9' }}>
+            <div style={{ borderRadius: 28, overflow: 'hidden', marginBottom: 32, background: '#f4efe6', aspectRatio: '16/9', boxShadow: '0 24px 60px rgba(16,42,67,0.08)' }}>
               {property.image ? (
                 <img src={property.image} alt={property.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 80 }}>🏛</div>
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 80, color: '#7d8a97' }}>🏛</div>
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1 }}>{property.name || `Property #${property.tokenId}`}</h1>
-              <div style={{ padding: '6px 14px', borderRadius: 6, background: 'rgba(201,168,76,0.08)', color: 'var(--gold)', fontSize: 12, whiteSpace: 'nowrap', marginLeft: 16 }}>{property.propertyType}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 16, flexWrap: 'wrap' }}>
+              <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1, color: 'var(--navy)' }}>{property.title || property.name || `Property #${property.tokenId}`}</h1>
+              <div style={{ padding: '8px 16px', borderRadius: 999, background: 'rgba(176,141,87,0.12)', color: '#102a43', fontSize: 12, whiteSpace: 'nowrap', marginLeft: 16, fontWeight: 700 }}>{property.propertyType}</div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>
-              <MapPin size={13} /> {getAttr('Address')}, {getAttr('City')}, {getAttr('Country')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#7d8a97', fontSize: 14, marginBottom: 24 }}>
+              <MapPin size={14} color="#7d8a97" /> {property.city || getAttr('City') || ''}{(property.state || getAttr('State') || getAttr('Country')) ? `, ${property.state || getAttr('State') || getAttr('Country')}` : ''}
             </div>
 
-            <div style={{ display: 'flex', gap: 24, padding: '20px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', marginBottom: 32 }}>
+            <div style={{ display: 'flex', gap: 24, padding: '24px 0', borderTop: '1px solid rgba(16,42,67,0.08)', borderBottom: '1px solid rgba(16,42,67,0.08)', marginBottom: 32 }}>
               {[
                 { icon: Bed,       label: 'Bedrooms',  val: getAttr('Bedrooms') },
                 { icon: Bath,      label: 'Bathrooms', val: getAttr('Bathrooms') },
                 { icon: Maximize2, label: 'Area',      val: `${getAttr('Area (sqft)')} sqft` },
               ].map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: '#f4efe6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <s.icon size={16} color="var(--gold)" />
                   </div>
                   <div>
@@ -133,22 +134,24 @@ export default function PropertyDetail() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             style={{ position: 'sticky', top: 100 }}
           >
-            <div className="glass-card" style={{ padding: 28 }}>
+            <div className="glass-card" style={{ padding: 28, border: '1px solid rgba(16,42,67,0.08)', background: '#ffffff' }}>
               <div style={{ marginBottom: 24, paddingBottom: 24, borderBottom: '1px solid var(--border)' }}>
                 <div style={{ fontSize: 11, color: 'var(--dim)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Price</div>
                 <div style={{ fontSize: 42, fontFamily: 'var(--font-display)', fontWeight: 300, color: 'var(--gold)', lineHeight: 1 }}>
-                  {property.price} <span style={{ fontSize: 18, color: 'var(--muted)' }}>ETH</span>
+                  {property.priceInETH || property.price} <span style={{ fontSize: 18, color: 'var(--muted)' }}>ETH</span>
                 </div>
+                {property.priceInINR && <div style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>{property.priceInINR}</div>}
               </div>
 
               {/* Tabs */}
-              <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--surface)', borderRadius: 8, padding: 4 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 24, background: '#f4efe6', borderRadius: 14, padding: 6 }}>
                 {['buy', 'offer', 'escrow'].map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
-                    flex: 1, padding: '8px 0', borderRadius: 6, border: 'none', cursor: 'pointer',
-                    background: tab === t ? 'var(--card)' : 'transparent',
-                    color: tab === t ? 'var(--white)' : 'var(--dim)',
-                    fontSize: 12, fontFamily: 'var(--font-body)', textTransform: 'capitalize', transition: 'all 0.2s',
+                    flex: 1, padding: '10px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
+                    background: tab === t ? 'var(--gold)' : 'transparent',
+                    color: tab === t ? 'var(--navy)' : '#5e6d77',
+                    fontSize: 13, fontFamily: 'var(--font-body)', textTransform: 'capitalize', transition: 'all 0.2s',
+                    fontWeight: 700,
                   }}>{t}</button>
                 ))}
               </div>
@@ -160,9 +163,9 @@ export default function PropertyDetail() {
                   </p>
                   <button className="btn-primary" onClick={buyProperty}
                     disabled={txLoading || !account || !property.isListed}
-                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '14px' }}
+                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '16px' }}
                   >
-                    {txLoading ? <><div className="spinner" style={{ width: 16, height: 16 }} /> Processing...</> : <><Wallet size={15} /> Buy for {property.price} ETH</>}
+                    {txLoading ? <><div className="spinner" style={{ width: 16, height: 16 }} /> Processing...</> : <><Wallet size={15} /> Buy for {property.priceInETH || property.price} ETH</>}
                   </button>
                 </div>
               )}
@@ -202,9 +205,9 @@ export default function PropertyDetail() {
                 </div>
               )}
 
-              {error && <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 8, fontSize: 12, color: 'var(--red)' }}>{error}</div>}
-              {txHash && <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: 8, fontSize: 12, color: 'var(--green)' }}>✓ Transaction confirmed! <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, marginTop: 4 }}>{txHash.slice(0,30)}...</div></div>}
-              {!account && <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--dim)', marginTop: 16 }}>Connect your wallet to transact</p>}
+              {error && <div style={{ marginTop: 14, padding: '12px 14px', background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.16)', borderRadius: 14, fontSize: 13, color: '#991b1b' }}>{error}</div>}
+              {txHash && <div style={{ marginTop: 14, padding: '12px 14px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 14, fontSize: 13, color: '#047857' }}>✓ Transaction confirmed! <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, marginTop: 6 }}>{txHash.slice(0,30)}...</div></div>}
+              {!account && <p style={{ textAlign: 'center', fontSize: 13, color: '#7d8a97', marginTop: 16 }}>Connect your wallet to transact</p>}
             </div>
           </motion.div>
         </div>

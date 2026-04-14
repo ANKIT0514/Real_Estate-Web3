@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Shield, Zap, Globe, TrendingUp, ChevronDown } from 'lucide-react'
+import { ArrowRight, Shield, FileText, MapPin, Layers, ChevronDown } from 'lucide-react'
 import { useWallet } from '../context/WalletContext.jsx'
 import { getStats, getProperties } from '../utils/api.js'
 import PropertyCard from '../components/PropertyCard.jsx'
@@ -19,114 +19,97 @@ export default function Home() {
     getProperties().then(d => setFeatured((d.properties || []).slice(0, 3))).catch(() => {})
   }, [])
 
-  const features = [
-    { icon: Shield,     title: 'Fully On-Chain',    desc: 'Every property is an NFT. Ownership is verifiable on the blockchain forever.' },
-    { icon: Zap,        title: 'Instant Transfer',  desc: 'Smart contracts execute transfers automatically. No intermediaries, no delays.' },
-    { icon: Globe,      title: 'Global Access',     desc: 'Buy, sell, and rent properties anywhere in the world using crypto.' },
-    { icon: TrendingUp, title: 'Transparent Price', desc: 'All transactions are public and verifiable. No hidden fees or manipulation.' },
+  const highlights = [
+    { icon: Shield,     title: 'Verified Ownership',          desc: 'Tokenized title records ensure ownership is authenticated and easily transferable.' },
+    { icon: FileText,   title: 'Legal Document Validation',   desc: 'Upload deeds, approvals, and NOCs for seamless verification with every listing.' },
+    { icon: MapPin,     title: 'India City Listings',         desc: 'Explore premium properties from Mumbai, Delhi, Bangalore, Pune and other leading markets.' },
+    { icon: Layers,     title: 'Blockchain Transparency',    desc: 'Every transaction is recorded immutably, creating a trusted audit trail for buyers and sellers.' },
+  ]
+
+  const processSteps = [
+    { title: 'List Property',       desc: 'Create a polished asset listing with complete property details.' },
+    { title: 'Upload Documents',    desc: 'Submit ownership papers, clearances, and certificates for verification.' },
+    { title: 'Verify',              desc: 'Confirm legal authenticity and blockchain-backed title integrity.' },
+    { title: 'Buy Securely',        desc: 'Complete purchase with confidence using secure on-chain settlement.' },
+  ]
+
+  const heroStats = [
+    { label: 'Verified Properties', value: stats.totalMinted ? `${stats.totalMinted}+` : '128+' },
+    { label: 'Indian Cities Covered', value: '14+' },
+    { label: 'Documents Validated', value: '5,400+' },
   ]
 
   return (
-    <div style={{ paddingTop: 72 }}>
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
-
-      {/* Hero */}
-      <section style={{ minHeight: '92vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-          mask: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
-        }} />
-
-        <div className="container" style={{ position: 'relative', zIndex: 1, paddingTop: 60, paddingBottom: 60 }}>
-          <motion.div variants={stagger} initial="hidden" animate="show" style={{ maxWidth: 800 }}>
-
+    <div style={{ paddingTop: 96 }}>
+      <section className="hero-section" style={{ backgroundImage: "url('/home.png')" }}>
+        <div className="hero-overlay" />
+        <div className="container hero-content">
+          <motion.div variants={stagger} initial="hidden" animate="show" className="hero-copy">
             <motion.div variants={fadeUp} transition={{ duration: 0.6 }}>
-              <div className="tag" style={{ marginBottom: 32 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} />
-                Blockchain-Powered Real Estate
+              <div className="tag" style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.18)', color: '#f7ede0' }}>
+                Luxury real estate secured on-chain
               </div>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} transition={{ duration: 0.7 }}
-              style={{ fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 1.0, marginBottom: 28, letterSpacing: '-0.03em' }}
-            >
-              The Future of{' '}
-              <span style={{ background: 'linear-gradient(135deg, var(--gold), var(--gold-l))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Property
-              </span>
-              <br />Ownership
+            <motion.h1 variants={fadeUp} transition={{ duration: 0.75, delay: 0.1 }} className="hero-title">
+              Secure Property Ownership in India
             </motion.h1>
 
-            <motion.p variants={fadeUp} transition={{ duration: 0.7, delay: 0.1 }}
-              style={{ fontSize: 18, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: 44 }}
-            >
-              Buy, sell, and rent real estate entirely on the blockchain.
-              Every transaction is trustless, transparent, and permanent.
+            <motion.p variants={fadeUp} transition={{ duration: 0.75, delay: 0.15 }} className="hero-subtitle">
+              Buy, verify, and manage real estate across Indian cities with blockchain-backed trust and document verification.
             </motion.p>
 
-            <motion.div variants={fadeUp} transition={{ duration: 0.6, delay: 0.2 }}
-              style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}
-            >
-              <Link to="/properties" className="btn-primary" style={{ fontSize: 14, padding: '14px 32px' }}>
-                Explore Properties <ArrowRight size={16} />
-              </Link>
-              {!account && (
-                <button className="btn-ghost" onClick={connect} style={{ fontSize: 14, padding: '14px 32px' }}>
-                  Connect Wallet
-                </button>
+            <motion.div variants={fadeUp} transition={{ duration: 0.75, delay: 0.25 }} className="hero-actions">
+              <Link to="/properties" className="btn-primary">Explore Properties <ArrowRight size={16} /></Link>
+              {account ? (
+                <Link to="/dashboard" className="btn-secondary">Upload Property</Link>
+              ) : (
+                <button className="btn-secondary" onClick={connect}>Connect Wallet</button>
               )}
             </motion.div>
 
-            {/* Stats */}
-            <motion.div variants={fadeUp} transition={{ duration: 0.6, delay: 0.3 }}
-              style={{ display: 'flex', gap: 48, marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--border)' }}
-            >
-              {[
-                { label: 'Properties Minted', value: stats.totalMinted },
-                { label: 'Listed for Sale',   value: stats.totalListed },
-                { label: 'Smart Contracts',   value: 4 },
-              ].map((s, i) => (
-                <div key={i}>
-                  <div style={{ fontSize: 36, fontFamily: 'var(--font-display)', fontWeight: 300, color: 'var(--gold)', lineHeight: 1 }}>{s.value}</div>
-                  <div style={{ fontSize: 12, color: 'var(--dim)', marginTop: 6, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.label}</div>
+            <motion.p variants={fadeUp} transition={{ duration: 0.75, delay: 0.3 }} className="hero-support">
+              e-Katha / A-Katha / B-Katha Verification • On-chain Ownership • India City Listings
+            </motion.p>
+          </motion.div>
+
+          <motion.div variants={fadeUp} transition={{ duration: 0.75, delay: 0.35 }} className="hero-right">
+            <div className="hero-stats-grid">
+              {heroStats.map((item, index) => (
+                <div key={index} className="hero-glass-card">
+                  <div style={{ fontSize: 36, fontFamily: 'var(--font-display)', color: '#fff', fontWeight: 700, marginBottom: 12 }}>{item.value}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{item.label}</div>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
         </div>
-
-        <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }}
-          style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', color: 'var(--dim)' }}
-        >
-          <ChevronDown size={20} />
-        </motion.div>
       </section>
 
-      {/* Features */}
-      <section className="section" style={{ background: 'var(--deep)' }}>
+      {/* Feature Highlights */}
+      <section className="section" style={{ background: '#ffffff' }}>
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: 64 }}
+            style={{ textAlign: 'center', marginBottom: 56 }}
           >
-            <div className="tag" style={{ marginBottom: 20 }}>Why EstateChain</div>
-            <h2 style={{ fontSize: 'clamp(36px, 5vw, 56px)', marginBottom: 16 }}>
-              Real Estate, <span style={{ fontStyle: 'italic', color: 'var(--gold)' }}>Reimagined</span>
+            <div className="tag" style={{ marginBottom: 20 }}>Core Benefits</div>
+            <h2 style={{ fontSize: 'clamp(36px, 5vw, 56px)', marginBottom: 16, color: '#102a43' }}>
+              Built for premium Indian real estate transactions
             </h2>
-            <div className="gold-line" style={{ marginTop: 24 }} />
+            <p style={{ maxWidth: 640, margin: '0 auto', color: '#7d8a97', lineHeight: 1.8 }}>
+              EstateChain delivers verified ownership, legal validation, city-wide listings, and immutable transparency for confident buying and selling.
+            </p>
           </motion.div>
           <div className="grid-4">
-            {features.map((f, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="glass-card" style={{ padding: '32px 28px' }}
+            {highlights.map((item, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="glass-card" style={{ padding: '32px 28px', minHeight: 250 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                  <f.icon size={22} color="var(--gold)" />
+                <div style={{ width: 54, height: 54, borderRadius: 16, background: 'rgba(176,141,87,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 22, color: '#102a43' }}>
+                  <item.icon size={24} />
                 </div>
-                <h3 style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 400, marginBottom: 10 }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7 }}>{f.desc}</p>
+                <h3 style={{ fontSize: 20, fontFamily: 'var(--font-display)', color: '#102a43', marginBottom: 12 }}>{item.title}</h3>
+                <p style={{ fontSize: 14, color: '#5e6d77', lineHeight: 1.9 }}>{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -153,27 +136,60 @@ export default function Home() {
         </section>
       )}
 
+      {/* Trusted Process */}
+      <section className="section" style={{ background: '#ffffff' }}>
+        <div className="container">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: 56 }}
+          >
+            <div className="tag" style={{ marginBottom: 20 }}>Trusted Process</div>
+            <h2 style={{ fontSize: 'clamp(36px, 5vw, 56px)', marginBottom: 16, color: '#102a43' }}>
+              List Property → Upload Documents → Verify → Buy Securely
+            </h2>
+            <p style={{ maxWidth: 640, margin: '0 auto', color: '#7d8a97', lineHeight: 1.8 }}>
+              A clear, step-by-step workflow built for India’s real estate buyers and sellers, blending legal certainty with blockchain trust.
+            </p>
+          </motion.div>
+
+          <div className="grid-4">
+            {processSteps.map((step, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="glass-card" style={{ padding: 30, minHeight: 210 }}
+              >
+                <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 14, background: 'rgba(16,42,67,0.06)', color: '#102a43', fontWeight: 700, fontSize: 18 }}>
+                  {i + 1}
+                </div>
+                <h3 style={{ fontSize: 20, color: '#102a43', marginBottom: 12 }}>{step.title}</h3>
+                <p style={{ color: '#5e6d77', lineHeight: 1.85 }}>{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="section-sm">
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03))', border: '1px solid rgba(201,168,76,0.15)', borderRadius: 28, padding: '64px 48px', textAlign: 'center' }}
+            style={{ background: 'linear-gradient(135deg, rgba(176,141,87,0.14), rgba(244,239,230,0.85))', border: '1px solid rgba(16,42,67,0.08)', borderRadius: 28, padding: '64px 48px', textAlign: 'center' }}
           >
-            <h2 style={{ fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: 16 }}>
-              Ready to Own Property on<br />
-              <span style={{ fontStyle: 'italic', color: 'var(--gold)' }}>the Blockchain?</span>
+            <h2 style={{ fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: 16, color: '#102a43' }}>
+              Start building your trusted property portfolio
             </h2>
-            <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 36, maxWidth: 480, margin: '0 auto 36px' }}>
-              Connect your MetaMask wallet and start buying, selling, or renting properties today.
+            <p style={{ color: '#5e6d77', fontSize: 16, marginBottom: 36, maxWidth: 520, margin: '0 auto 36px' }}>
+              Connect your wallet to view the latest curated Indian listings and complete purchases with verified ownership.
             </p>
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link to="/properties" className="btn-primary" style={{ fontSize: 14, padding: '14px 36px' }}>
+                Explore Properties <ArrowRight size={16} />
+              </Link>
               {!account ? (
-                <button className="btn-primary" onClick={connect} style={{ fontSize: 14, padding: '14px 36px' }}>
-                  Connect Wallet <ArrowRight size={16} />
+                <button className="btn-ghost" onClick={connect} style={{ fontSize: 14, padding: '14px 36px' }}>
+                  Connect Wallet
                 </button>
               ) : (
-                <Link to="/properties" className="btn-primary" style={{ fontSize: 14, padding: '14px 36px' }}>
-                  Browse Properties <ArrowRight size={16} />
+                <Link to="/dashboard" className="btn-ghost" style={{ fontSize: 14, padding: '14px 36px' }}>
+                  Go to Dashboard
                 </Link>
               )}
             </div>
@@ -182,11 +198,27 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '40px 0', borderTop: '1px solid var(--border)', marginTop: 40 }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 20 }}>Estate<span style={{ color: 'var(--gold)' }}>Chain</span></div>
-          <div style={{ fontSize: 12, color: 'var(--dim)' }}>Built on Ethereum · Smart Contracts · Fully Decentralized</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--dim)' }}>v1.0.0</div>
+      <footer style={{ padding: '60px 0', borderTop: '1px solid rgba(16,42,67,0.08)', marginTop: 40, background: '#ffffff' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr 1fr', gap: 32, alignItems: 'start' }}>
+          <div>
+            <h3 style={{ fontSize: 24, marginBottom: 14, color: '#102a43' }}>EstateChain</h3>
+            <p style={{ color: '#7d8a97', maxWidth: 460, lineHeight: 1.8 }}>
+              Secure property ownership and verified asset transfer across Indian cities using blockchain-backed records.
+            </p>
+          </div>
+          <div>
+            <h4 style={{ fontSize: 16, marginBottom: 18, color: '#102a43' }}>Explore</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#5e6d77' }}>
+              <Link to="/properties">Properties</Link>
+              <Link to="/marketplace">Marketplace</Link>
+              <Link to="/dashboard">Dashboard</Link>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ fontSize: 16, marginBottom: 18, color: '#102a43' }}>Contact</h4>
+            <p style={{ color: '#5e6d77', lineHeight: 1.8 }}>support@estatechain.in</p>
+            <p style={{ color: '#5e6d77', lineHeight: 1.8 }}>+91 98765 43210</p>
+          </div>
         </div>
       </footer>
     </div>

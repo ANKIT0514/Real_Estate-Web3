@@ -9,7 +9,14 @@ if (fs.existsSync(addressesPath)) {
 }
 
 const loadABI = (contractName) => {
-  const p = path.join(__dirname, `../../artifacts/contracts/${contractName}.sol/${contractName}.json`);
+  const fileNameMap = {
+    "PropertyNFT": "PropertyNFT",
+    "RealEstateMarketplace": "Marketplace",
+    "RealEstateEscrow": "Escrow",
+    "RentPayment": "RentPayment"
+  };
+  const fileName = fileNameMap[contractName] || contractName;
+  const p = path.join(__dirname, `../../artifacts/contracts/${fileName}.sol/${contractName}.json`);
   if (!fs.existsSync(p)) { console.warn(`ABI not found: ${contractName}`); return []; }
   return JSON.parse(fs.readFileSync(p)).abi;
 };
@@ -21,7 +28,7 @@ const getSigner = () =>
   new ethers.Wallet(process.env.PRIVATE_KEY, getProvider());
 
 const getPropertyNFT  = (s) => new ethers.Contract(addresses.PropertyNFT,  loadABI("PropertyNFT"),           s || getProvider());
-const getMarketplace  = (s) => new ethers.Contract(addresses.Marketplace,  loadABI("RealEstateMarketplace"), s || getProvider());
+const getMarketplace  = (s) => new ethers.Contract(addresses.Marketplace, loadABI("RealEstateMarketplace"), s || getProvider());
 const getEscrow       = (s) => new ethers.Contract(addresses.Escrow,       loadABI("RealEstateEscrow"),      s || getProvider());
 const getRentPayment  = (s) => new ethers.Contract(addresses.RentPayment,  loadABI("RentPayment"),           s || getProvider());
 
