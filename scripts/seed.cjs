@@ -18,6 +18,7 @@ const PROPERTIES = [
     bedrooms:    "5",
     bathrooms:   "4",
     area:        "4500",
+    verificationStatus: "Verified",
   },
   {
     name:        "Modern Downtown Apartment",
@@ -33,6 +34,7 @@ const PROPERTIES = [
     bedrooms:    "2",
     bathrooms:   "2",
     area:        "1200",
+    verificationStatus: "Verified",
   },
   {
     name:        "Classic Heritage House",
@@ -48,6 +50,7 @@ const PROPERTIES = [
     bedrooms:    "4",
     bathrooms:   "3",
     area:        "3200",
+    verificationStatus: "Pending",
   },
   {
     name:        "Penthouse Sky Residence",
@@ -63,6 +66,7 @@ const PROPERTIES = [
     bedrooms:    "4",
     bathrooms:   "5",
     area:        "6000",
+    verificationStatus: "Verified",
   },
   {
     name:        "Beachfront Paradise Villa",
@@ -78,6 +82,7 @@ const PROPERTIES = [
     bedrooms:    "6",
     bathrooms:   "6",
     area:        "7500",
+    verificationStatus: "Pending",
   },
   {
     name:        "Smart Studio Apartment",
@@ -93,6 +98,7 @@ const PROPERTIES = [
     bedrooms:    "1",
     bathrooms:   "1",
     area:        "650",
+    verificationStatus: "Pending",
   },
   {
     name:        "Mountain View Retreat",
@@ -108,6 +114,7 @@ const PROPERTIES = [
     bedrooms:    "3",
     bathrooms:   "2",
     area:        "2100",
+    verificationStatus: "Verified",
   },
   {
     name:        "Commercial Office Space",
@@ -123,6 +130,7 @@ const PROPERTIES = [
     bedrooms:    "0",
     bathrooms:   "4",
     area:        "8000",
+    verificationStatus: "Pending",
   },
 ]
 
@@ -154,6 +162,7 @@ async function main() {
       name:        p.name,
       description: p.description,
       image:       p.image,
+      verificationStatus: p.verificationStatus || "Pending",
       attributes: [
         { trait_type: "Property Type", value: ["House","Apartment","Villa","Commercial","Land","Office"][p.propType] },
         { trait_type: "City",          value: p.city },

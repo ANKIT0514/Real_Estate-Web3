@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { MapPin, Bed, Bath, Maximize2, Shield, ShoppingBag, Eye } from 'lucide-react'
+import { MapPin, Bed, Bath, Maximize2, Shield, ShoppingBag, Eye, Check, AlertCircle, X } from 'lucide-react'
 
 const FULL_INR_RATE = 165000
 const formatINR = (value) => new Intl.NumberFormat('en-IN', {
@@ -27,6 +27,7 @@ export default function PropertyCard({ property, index = 0 }) {
     city = '',
     state = '',
     areaSqFt = '',
+    verificationStatus = 'Pending',
   } = property
 
   const displayTitle = title || name || `Property #${tokenId || id}`
@@ -40,6 +41,41 @@ export default function PropertyCard({ property, index = 0 }) {
   const ethValue = parseFloat(priceInETH || price || '0')
   const inrValue = priceInINR || (ethValue ? formatINR(ethValue * FULL_INR_RATE) : '—')
   const saleBadge = isListed ? 'For Sale' : 'Sold'
+
+  // Verification status styling
+  const getVerificationConfig = () => {
+    if (verificationStatus === 'Verified') {
+      return {
+        icon: Check,
+        background: 'rgba(34, 197, 94, 0.2)',
+        borderBg: 'rgba(34, 197, 94, 0.35)',
+        color: '#166534',
+        dotBg: '#22c55e',
+        dotShadow: 'rgba(34, 197, 94, 0.6)',
+      }
+    } else if (verificationStatus === 'Rejected') {
+      return {
+        icon: X,
+        background: 'rgba(239, 68, 68, 0.2)',
+        borderBg: 'rgba(239, 68, 68, 0.35)',
+        color: '#7f1d1d',
+        dotBg: '#ef4444',
+        dotShadow: 'rgba(239, 68, 68, 0.6)',
+      }
+    } else {
+      return {
+        icon: AlertCircle,
+        background: 'rgba(217, 119, 6, 0.2)',
+        borderBg: 'rgba(217, 119, 6, 0.35)',
+        color: '#78350f',
+        dotBg: '#ea580c',
+        dotShadow: 'rgba(234, 88, 12, 0.6)',
+      }
+    }
+  }
+
+  const verificationConfig = getVerificationConfig()
+  const IconComponent = verificationConfig.icon
 
   return (
     <motion.div
@@ -60,12 +96,36 @@ export default function PropertyCard({ property, index = 0 }) {
           </div>
         )}
 
+        {/* Verification Status Badge */}
+        <div style={{
+          position: 'absolute',
+          top: 14,
+          right: 14,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          borderRadius: 12,
+          padding: '8px 14px',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          backdropFilter: 'blur(12px)',
+          background: verificationConfig.background,
+          border: `2px solid ${verificationConfig.borderBg}`,
+          color: verificationConfig.color,
+          boxShadow: '0 8px 16px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3)',
+        }}>
+          <IconComponent size={13} strokeWidth={2.5} />
+          {verificationStatus}
+        </div>
+
         <div style={{ position: 'absolute', top: 14, left: 14, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <div className="tag" style={{ fontSize: 10, padding: '5px 10px' }}><Shield size={10} /> {status}</div>
           <div className="tag badge-secondary" style={{ fontSize: 10, padding: '5px 10px' }}>{saleBadge}</div>
         </div>
 
-        <div style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', padding: '5px 10px', borderRadius: 6, fontSize: 11, color: 'var(--white)', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ position: 'absolute', bottom: 14, right: 14, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', padding: '5px 10px', borderRadius: 6, fontSize: 11, color: 'var(--white)', fontFamily: 'var(--font-mono)' }}>
           #{tokenId}
         </div>
 

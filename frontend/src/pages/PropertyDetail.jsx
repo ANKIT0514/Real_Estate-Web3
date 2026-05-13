@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Shield, MapPin, Bed, Bath, Maximize2, ExternalLink, Wallet, Clock } from 'lucide-react'
+import { ArrowLeft, Shield, MapPin, Bed, Bath, Maximize2, ExternalLink, Wallet, Clock, Check, AlertCircle, X } from 'lucide-react'
 import { getProperty } from '../utils/api.js'
 import { useWallet } from '../context/WalletContext.jsx'
 import { getMarketplaceContract } from '../utils/contracts.js'
@@ -55,6 +55,41 @@ export default function PropertyDetail() {
 
   const getAttr = (trait) => property?.attributes?.find(a => a.trait_type === trait)?.value || '—'
 
+  // Determine verification badge styling
+  const getVerificationBadgeConfig = () => {
+    const verificationStatus = property?.verificationStatus || 'Pending'
+    if (verificationStatus === 'Verified') {
+      return {
+        icon: Check,
+        background: 'rgba(34, 197, 94, 0.15)',
+        borderColor: 'rgba(34, 197, 94, 0.3)',
+        color: '#166534',
+        dotBg: '#22c55e',
+      }
+    } else if (verificationStatus === 'Rejected') {
+      return {
+        icon: X,
+        background: 'rgba(239, 68, 68, 0.15)',
+        borderColor: 'rgba(239, 68, 68, 0.3)',
+        color: '#7f1d1d',
+        dotBg: '#ef4444',
+      }
+    } else {
+      return {
+        icon: AlertCircle,
+        background: 'rgba(217, 119, 6, 0.15)',
+        borderColor: 'rgba(217, 119, 6, 0.3)',
+        color: '#78350f',
+        dotBg: '#ea580c',
+      }
+    }
+  }
+
+  const verificationBadgeConfig = getVerificationBadgeConfig()
+  const VerificationIcon = verificationBadgeConfig.icon
+
+  const isVerifiedProperty = (property?.verificationStatus || 'Pending') === 'Verified'
+
   if (loading) return (
     <div style={{ paddingTop: 72, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <div className="spinner" style={{ width: 40, height: 40 }} />
@@ -87,7 +122,28 @@ export default function PropertyDetail() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 16, flexWrap: 'wrap' }}>
               <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1, color: 'var(--navy)' }}>{property.title || property.name || `Property #${property.tokenId}`}</h1>
-              <div style={{ padding: '8px 16px', borderRadius: 999, background: 'rgba(176,141,87,0.12)', color: '#102a43', fontSize: 12, whiteSpace: 'nowrap', marginLeft: 16, fontWeight: 700 }}>{property.propertyType}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ padding: '8px 16px', borderRadius: 999, background: 'rgba(176,141,87,0.12)', color: '#102a43', fontSize: 12, whiteSpace: 'nowrap', fontWeight: 700 }}>{property.propertyType}</div>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 16px',
+                  borderRadius: 12,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backdropFilter: 'blur(12px)',
+                  background: verificationBadgeConfig.background,
+                  border: `2px solid ${verificationBadgeConfig.borderColor}`,
+                  color: verificationBadgeConfig.color,
+                  boxShadow: '0 8px 16px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.3)',
+                }}>
+                  <VerificationIcon size={14} strokeWidth={2.5} />
+                  {property.verificationStatus || 'Pending'}
+                </div>
+              </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#7d8a97', fontSize: 14, marginBottom: 24 }}>
@@ -158,12 +214,21 @@ export default function PropertyDetail() {
 
               {tab === 'buy' && (
                 <div>
+                  {!isVerifiedProperty && (
+                    <div style={{ marginBottom: 20, padding: '16px', background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: 14, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <div style={{ fontSize: 20, marginTop: -2 }}>⚠️</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#854d0e', marginBottom: 4 }}>Verification Required</div>
+                        <p style={{ fontSize: 12, color: '#7c2d12', lineHeight: 1.5 }}>This property must be legally verified before purchase. Contact the seller or our support for verification status.</p>
+                      </div>
+                    </div>
+                  )}
                   <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20, lineHeight: 1.7 }}>
                     Purchase this property instantly. The NFT transfers to your wallet upon payment.
                   </p>
                   <button className="btn-primary" onClick={buyProperty}
-                    disabled={txLoading || !account || !property.isListed}
-                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '16px' }}
+                    disabled={!isVerifiedProperty || txLoading || !account || !property.isListed}
+                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '16px', opacity: !isVerifiedProperty ? 0.5 : 1 }}
                   >
                     {txLoading ? <><div className="spinner" style={{ width: 16, height: 16 }} /> Processing...</> : <><Wallet size={15} /> Buy for {property.priceInETH || property.price} ETH</>}
                   </button>
@@ -172,16 +237,25 @@ export default function PropertyDetail() {
 
               {tab === 'offer' && (
                 <div>
-                  <div style={{ marginBottom: 16 }}>
+                  {!isVerifiedProperty && (
+                    <div style={{ marginBottom: 20, padding: '16px', background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: 14, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <div style={{ fontSize: 20, marginTop: -2 }}>⚠️</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#854d0e', marginBottom: 4 }}>Verification Required</div>
+                        <p style={{ fontSize: 12, color: '#7c2d12', lineHeight: 1.5 }}>This property must be legally verified before purchase. Contact the seller or our support for verification status.</p>
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ marginBottom: 16, opacity: !isVerifiedProperty ? 0.5 : 1, pointerEvents: !isVerifiedProperty ? 'none' : 'auto' }}>
                     <label style={{ fontSize: 12, color: 'var(--dim)', display: 'block', marginBottom: 6 }}>Your Offer (ETH)</label>
-                    <input className="input-field" placeholder="0.00" type="number" min="0" step="0.01" value={offerAmount} onChange={e => setOfferAmount(e.target.value)} />
+                    <input className="input-field" placeholder="0.00" type="number" min="0" step="0.01" value={offerAmount} onChange={e => setOfferAmount(e.target.value)} disabled={!isVerifiedProperty} />
                   </div>
-                  <div style={{ marginBottom: 20 }}>
+                  <div style={{ marginBottom: 20, opacity: !isVerifiedProperty ? 0.5 : 1, pointerEvents: !isVerifiedProperty ? 'none' : 'auto' }}>
                     <label style={{ fontSize: 12, color: 'var(--dim)', display: 'block', marginBottom: 6 }}>Expires in: {offerDays} days</label>
-                    <input type="range" min="1" max="30" value={offerDays} onChange={e => setOfferDays(e.target.value)} style={{ width: '100%', accentColor: 'var(--gold)' }} />
+                    <input type="range" min="1" max="30" value={offerDays} onChange={e => setOfferDays(e.target.value)} style={{ width: '100%', accentColor: 'var(--gold)' }} disabled={!isVerifiedProperty} />
                   </div>
-                  <button className="btn-primary" onClick={makeOffer} disabled={txLoading || !account || !offerAmount}
-                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '14px' }}
+                  <button className="btn-primary" onClick={makeOffer} disabled={!isVerifiedProperty || txLoading || !account || !offerAmount}
+                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '14px', opacity: !isVerifiedProperty ? 0.5 : 1 }}
                   >
                     {txLoading ? <><div className="spinner" style={{ width: 16, height: 16 }} /> Submitting...</> : 'Submit Offer'}
                   </button>
@@ -190,16 +264,27 @@ export default function PropertyDetail() {
 
               {tab === 'escrow' && (
                 <div>
-                  <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 20 }}>
+                  {!isVerifiedProperty && (
+                    <div style={{ marginBottom: 20, padding: '16px', background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: 14, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <div style={{ fontSize: 20, marginTop: -2 }}>⚠️</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#854d0e', marginBottom: 4 }}>Verification Required</div>
+                        <p style={{ fontSize: 12, color: '#7c2d12', lineHeight: 1.5 }}>This property must be legally verified before purchase. Contact the seller or our support for verification status.</p>
+                      </div>
+                    </div>
+                  )}
+                  <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 20, opacity: !isVerifiedProperty ? 0.5 : 1 }}>
                     Funds are held by the smart contract until both parties approve the deal.
                   </p>
-                  {['Buyer deposits ETH', 'Both parties approve', 'Funds + NFT transferred'].map((s, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
-                      <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i+1}</div>
-                      <span style={{ fontSize: 12, color: 'var(--muted)' }}>{s}</span>
-                    </div>
-                  ))}
-                  <button className="btn-ghost" style={{ width: '100%', justifyContent: 'center', fontSize: 13, marginTop: 16 }}>
+                  <div style={{ opacity: !isVerifiedProperty ? 0.5 : 1, pointerEvents: !isVerifiedProperty ? 'none' : 'auto' }}>
+                    {['Buyer deposits ETH', 'Both parties approve', 'Funds + NFT transferred'].map((s, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
+                        <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i+1}</div>
+                        <span style={{ fontSize: 12, color: 'var(--muted)' }}>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="btn-ghost" disabled={!isVerifiedProperty} style={{ width: '100%', justifyContent: 'center', fontSize: 13, marginTop: 16, opacity: !isVerifiedProperty ? 0.5 : 1 }}>
                     Start Escrow
                   </button>
                 </div>

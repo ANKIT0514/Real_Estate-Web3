@@ -5,6 +5,7 @@ import { ArrowRight, Shield, FileText, MapPin, Layers, ChevronDown } from 'lucid
 import { useWallet } from '../context/WalletContext.jsx'
 import { getStats, getProperties } from '../utils/api.js'
 import PropertyCard from '../components/PropertyCard.jsx'
+import PromotionalBanner from '../components/PromotionalBanner.jsx'
 
 const fadeUp = { hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0 } }
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
@@ -40,51 +41,146 @@ export default function Home() {
   ]
 
   return (
-    <div style={{ paddingTop: 96 }}>
-      <section className="hero-section" style={{ backgroundImage: "url('/home.png')" }}>
-        <div className="hero-overlay" />
-        <div className="container hero-content">
-          <motion.div variants={stagger} initial="hidden" animate="show" className="hero-copy">
-            <motion.div variants={fadeUp} transition={{ duration: 0.6 }}>
-              <div className="tag" style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.18)', color: '#f7ede0' }}>
-                Luxury real estate secured on-chain
-              </div>
-            </motion.div>
+    <>
+      <PromotionalBanner />
 
-            <motion.h1 variants={fadeUp} transition={{ duration: 0.75, delay: 0.1 }} className="hero-title">
-              Secure Property Ownership in India
-            </motion.h1>
+     
+ <section style={{ position: 'relative', height: '100vh', width: '100%', overflow: 'hidden' }}>
 
-            <motion.p variants={fadeUp} transition={{ duration: 0.75, delay: 0.15 }} className="hero-subtitle">
-              Buy, verify, and manage real estate across Indian cities with blockchain-backed trust and document verification.
-            </motion.p>
+  {/* BACKGROUND IMAGE */}
+  <img
+    src="/hero.png"
+    alt="Luxury Property"
+    style={{
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      top: 0,
+      left: 0
+    }}
+  />
 
-            <motion.div variants={fadeUp} transition={{ duration: 0.75, delay: 0.25 }} className="hero-actions">
-              <Link to="/properties" className="btn-primary">Explore Properties <ArrowRight size={16} /></Link>
-              {account ? (
-                <Link to="/dashboard" className="btn-secondary">Upload Property</Link>
-              ) : (
-                <button className="btn-secondary" onClick={connect}>Connect Wallet</button>
-              )}
-            </motion.div>
+  {/* OVERLAY */}
+  <div style={{
+    position: 'absolute',
+    inset: 0,
+    background: `
+      linear-gradient(to bottom, rgba(10,14,22,0.3), rgba(10,14,22,0.85)),
+      linear-gradient(to right, rgba(10,14,22,0.5), transparent)
+    `
+  }} />
 
-            <motion.p variants={fadeUp} transition={{ duration: 0.75, delay: 0.3 }} className="hero-support">
-              e-Katha / A-Katha / B-Katha Verification • On-chain Ownership • India City Listings
-            </motion.p>
-          </motion.div>
+  {/* CENTER BRAND TEXT */}
+  <div style={{
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2
+  }}>
+    <motion.h1
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1 }}
+      style={{
+        fontSize: 'clamp(90px, 10vw, 180px)',
+        fontWeight: 700,
+        color: '#f5f1e6',
+        letterSpacing: '-0.03em',
+        textShadow: '0 10px 40px rgba(0,0,0,0.6)'
+      }}
+    >
+      EasyDwells
+    </motion.h1>
+  </div>
 
-          <motion.div variants={fadeUp} transition={{ duration: 0.75, delay: 0.35 }} className="hero-right">
-            <div className="hero-stats-grid">
-              {heroStats.map((item, index) => (
-                <div key={index} className="hero-glass-card">
-                  <div style={{ fontSize: 36, fontFamily: 'var(--font-display)', color: '#fff', fontWeight: 700, marginBottom: 12 }}>{item.value}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{item.label}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+  {/* LEFT TEXT */}
+  <div style={{
+    position: 'absolute',
+    bottom: 40,
+    left: 40,
+    maxWidth: 420,
+    zIndex: 3
+  }}>
+    <p style={{
+      color: '#d1d5db',
+      fontSize: 16,
+      lineHeight: 1.6
+    }}>
+      Creating modern spaces where <span style={{ color: '#fff' }}>
+      blockchain, verification, and trust</span> come together seamlessly.
+    </p>
+
+    <p style={{
+      marginTop: 10,
+      color: 'gold',
+      fontSize: 12,
+      letterSpacing: '0.2em'
+    }}>
+      #INSPIRED LIVING
+    </p>
+  </div>
+
+  {/* RIGHT GLASS CARD */}
+  <div style={{
+    position: 'absolute',
+    bottom: 40,
+    right: 40,
+    zIndex: 3,
+    background: 'rgba(255,255,255,0.08)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: 16,
+    padding: 20,
+    maxWidth: 260
+  }}>
+    <h3 style={{ color: '#fff', marginBottom: 8 }}>
+      Blockchain Services
+    </h3>
+
+    <p style={{
+      fontSize: 13,
+      color: '#ccc',
+      marginBottom: 10
+    }}>
+      Property verification, smart contract escrow, and tokenized ownership.
+    </p>
+
+    <span style={{ color: 'gold', fontSize: 12 }}>
+      Explore More →
+    </span>
+  </div>
+
+</section>
+<div className="trust-bar">
+  <div className="trust-track">
+    {[
+      "Blockchain Verified",
+      "E-Katha Certified",
+      "RERA Compliant",
+      "Legal Verified",
+      "14+ Cities",
+      "Secure Escrow",
+      "Premium Properties",
+      "Pan India",
+      // duplicate for smooth loop
+      "Blockchain Verified",
+      "E-Katha Certified",
+      "RERA Compliant",
+      "Legal Verified",
+      "14+ Cities",
+      "Secure Escrow",
+      "Premium Properties",
+      "Pan India",
+    ].map((item, i) => (
+      <div key={i} className="trust-item">
+        {item}
+      </div>
+    ))}
+  </div>
+</div>
 
       {/* Feature Highlights */}
       <section className="section" style={{ background: '#ffffff' }}>
@@ -167,6 +263,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Trusted Partners & Collaborations */}
+      <section className="section">
+        <div className="container">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: 56 }}
+          >
+            <div className="tag" style={{ marginBottom: 20 }}>Trusted Partners</div>
+            <h2 style={{ fontSize: 'clamp(36px, 5vw, 56px)', marginBottom: 16, color: '#102a43' }}>
+              Trusted Partners & Collaborations
+            </h2>
+            <p style={{ maxWidth: 640, margin: '0 auto', color: '#7d8a97', lineHeight: 1.8 }}>
+              Powering India's premium real estate transactions with industry-leading technology and financial partners.
+            </p>
+          </motion.div>
+
+          <div className="partners-container">
+            <div className="partners-track">
+              {[
+                'AWS', 'Chainlink', 'ICICI', 'Infosys', 'Microsoft', 'Google Cloud', 'Ethereum',
+                'AWS', 'Chainlink', 'ICICI', 'Infosys', 'Microsoft', 'Google Cloud', 'Ethereum'
+              ].map((partner, index) => (
+                <div key={index} className="partner-logo">
+                  {partner}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="section-sm">
         <div className="container">
@@ -221,6 +347,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
+    
   )
 }

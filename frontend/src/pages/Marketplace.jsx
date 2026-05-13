@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, TrendingUp, MapPin, Home } from 'lucide-react'
+import { ArrowRight, TrendingUp, MapPin, Home, Check, AlertCircle, X } from 'lucide-react'
 import { getListings } from '../utils/api.js'
 import DocumentUpload from '../components/DocumentUpload.jsx'
 
@@ -81,6 +81,53 @@ export default function Marketplace() {
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, color: 'var(--dim)' }}>🏛</div>
                       )}
 
+                      {/* Verification badge */}
+                      {(() => {
+                        const verificationStatus = l.verificationStatus || 'Pending'
+                        const badgeConfigs = {
+                          Verified: { 
+                            Icon: Check,
+                            bg: 'rgba(34, 197, 94, 0.2)', 
+                            border: 'rgba(34, 197, 94, 0.35)', 
+                            text: '#166534' 
+                          },
+                          Rejected: { 
+                            Icon: X,
+                            bg: 'rgba(239, 68, 68, 0.2)', 
+                            border: 'rgba(239, 68, 68, 0.35)', 
+                            text: '#7f1d1d' 
+                          },
+                          Pending: { 
+                            Icon: AlertCircle,
+                            bg: 'rgba(217, 119, 6, 0.2)', 
+                            border: 'rgba(217, 119, 6, 0.35)', 
+                            text: '#78350f' 
+                          }
+                        }
+                        const config = badgeConfigs[verificationStatus] || badgeConfigs.Pending
+                        const IconComponent = config.Icon
+                        return (
+                          <div style={{
+                            position: 'absolute', top: 12, right: 12,
+                            display: 'flex', alignItems: 'center', gap: 6,
+                            background: config.bg, 
+                            border: `2px solid ${config.border}`,
+                            borderRadius: 12, 
+                            padding: '8px 12px',
+                            fontSize: 10, 
+                            color: config.text,
+                            fontWeight: 700, 
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase',
+                            backdropFilter: 'blur(12px)',
+                            boxShadow: '0 8px 16px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3)',
+                          }}>
+                            <IconComponent size={12} strokeWidth={2.5} />
+                            {verificationStatus}
+                          </div>
+                        )
+                      })()}
+
                       {/* Live badge */}
                       <div style={{
                         position: 'absolute', top: 12, left: 12,
@@ -93,17 +140,6 @@ export default function Marketplace() {
                       }}>
                         <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#124634', boxShadow: '0 0 6px rgba(18,70,52,0.22)' }} />
                         LIVE
-                      </div>
-
-                      {/* Token badge */}
-                      <div style={{
-                        position: 'absolute', top: 12, right: 12,
-                        background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-                        padding: '3px 8px', borderRadius: 4,
-                        fontSize: 10, color: 'var(--dim)',
-                        fontFamily: 'var(--font-mono)',
-                      }}>
-                        #{l.tokenId}
                       </div>
 
                       {/* Price overlay */}
